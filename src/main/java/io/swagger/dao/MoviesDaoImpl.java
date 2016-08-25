@@ -3,18 +3,21 @@ package io.swagger.dao;
 import com.google.common.base.Optional;
 import io.swagger.model.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import javax.swing.text.html.Option;
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public class MoviesDaoImpl implements MoviesDao {
 
 
-    private static final String SELECT_ALL_MOVIES = "select name from movies where movie = ? and provider = ? order by expiry desc";
-    private static final String SELECT_BY_PROFILE = "select * from subscriptions where profile_id = ? order by expiry desc";
+    private static final String SELECT_ALL_MOVIES = "select * from movies limit by ?";
+    private static final String SELECT_MOVIE_BY_NAME = "select * from movies where name = ?";
 
     private final JdbcTemplate template;
 
@@ -27,13 +30,17 @@ public class MoviesDaoImpl implements MoviesDao {
     @Override
     public Collection<Movie> getAllMovies(int size) {
 
+        List<Movie> movies=  template.query(SELECT_ALL_MOVIES, new Object[]{ size },new BeanPropertyRowMapper(Movie.class));
 
-        return null;
-
+        return movies;
     }
 
     @Override
-    public Optional<Movie> getMovieByName(String movieName) {
-        return null;
+    public List<Movie> getMovieByName(String movieName) {
+
+        List<Movie> movies=  template.query(SELECT_MOVIE_BY_NAME, new Object[]{ movieName },new BeanPropertyRowMapper(Movie.class));
+
+        return movies;
     }
 }
+
